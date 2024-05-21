@@ -1,7 +1,25 @@
 ﻿@page "/"
+@using EnergyInsight.Services
+@rendermode InteractiveServer
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Counter</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Counter</h1>
 
-Welcome to your new app.
+<p role="status">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Get News</button>
+
+@code {
+    [Inject]
+    private NewsAPIService NewsApiService { get; set; }
+    private int currentCount = 0;
+
+    private async void IncrementCount()
+    {
+        var x = await NewsApiService.DoSearch("test");
+
+
+        currentCount++;
+    }
+}
