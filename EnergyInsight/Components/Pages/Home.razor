@@ -1,5 +1,7 @@
 ﻿@page "/"
 @using EnergyInsight.Services
+@using HtmlAgilityPack
+@using System.Text.RegularExpressions
 @rendermode InteractiveServer
 
 <PageTitle>News</PageTitle>
@@ -27,6 +29,9 @@
             </li>
         }
     </ul>
+
+
+    <p>@data </p>
 }
 else if (isLoading)
 {
@@ -41,9 +46,11 @@ else if (error != null)
     private Result[] articles;
     private bool isLoading;
     private string error;
+    private string data = string.Empty;
 
     [Inject]
     private NewsAPIService NewsApiService { get; set; }
+
 
     private async Task GetNews()
     {
@@ -52,8 +59,23 @@ else if (error != null)
 
         try
         {
+
             var response = await NewsApiService.DoSearch("Energy Sector Europe");
+
+
             articles = response?.results;
+
+            foreach (var article in articles)
+            {
+                HtmlWeb web = new HtmlWeb();
+                HtmlDocument document = web.Load(article.link);
+
+                // Extract text from all nodes
+                var text = document.DocumentNode.InnerText;
+                var cleanedText = CleanText(text);
+                data += cleanedText;
+            }
+
         }
         catch (Exception ex)
         {
@@ -63,5 +85,12 @@ else if (error != null)
         {
             isLoading = false;
         }
+    }
+
+    private string CleanText(string text)
+    {
+        // Replace multiple spaces, new lines, and tabs with a single space
+        string cleanedText = Regex.Replace(text, @"\s+", " ");
+        return cleanedText.Trim();
     }
 }
