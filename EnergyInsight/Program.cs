@@ -1,9 +1,8 @@
 using EnergyInsight.Components;
+using Serilog;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddHttpClient();
-
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -27,4 +26,16 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-app.Run();
+try
+{
+    Log.Information("Starting web host");
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Host terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
