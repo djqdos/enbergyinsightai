@@ -2,24 +2,66 @@
 @using EnergyInsight.Services
 @rendermode InteractiveServer
 
-<PageTitle>Counter</PageTitle>
+<PageTitle>News</PageTitle>
 
-<h1>Counter</h1>
+<h1>Latest News</h1>
 
-<p role="status">Current count: @currentCount</p>
+<button class="btn btn-primary" @onclick="GetNews">Get News</button>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Get News</button>
+@if (articles != null)
+{
+    <ul>
+        @foreach (var article in articles)
+        {
+            <li class="mb-3">
+                <h2><a href="@article.link" target="_blank">@article.title</a></h2>
+                @if (!string.IsNullOrWhiteSpace(article.description))
+                {
+                    <p>@article.description</p>
+                }
+                @if (!string.IsNullOrWhiteSpace(article.image_url))
+                {
+                    <img src="@article.image_url" alt="@article.title" class="img-thumbnail" style="max-width: 300px;" />
+                }
+                <p><small>Published at: @article.pubDate</small></p>
+            </li>
+        }
+    </ul>
+}
+else if (isLoading)
+{
+    <p>Loading news...</p>
+}
+else if (error != null)
+{
+    <p>Error loading news: @error</p>
+}
 
 @code {
+    private Result[] articles;
+    private bool isLoading;
+    private string error;
+
     [Inject]
     private NewsAPIService NewsApiService { get; set; }
-    private int currentCount = 0;
 
-    private async void IncrementCount()
+    private async Task GetNews()
     {
-        var x = await NewsApiService.DoSearch("test");
+        isLoading = true;
+        error = null;
 
-
-        currentCount++;
+        try
+        {
+            var response = await NewsApiService.DoSearch("Energy Sector Europe");
+            articles = response?.results;
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
 }
