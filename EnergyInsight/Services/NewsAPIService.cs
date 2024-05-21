@@ -1,23 +1,25 @@
-﻿namespace EnergyInsight.Services
+﻿using Microsoft.AspNetCore.Mvc.Formatters;
+
+namespace EnergyInsight.Services
 {
 	public class NewsAPIService : INewsAPIService
 	{
 		private HttpClient _client;
-		private string API_KEY = "d9f2e6df5a244c18b31eb255e7bc1cf2";
+		private string API_KEY = "pub_4462399a7036bfdc2e24b59be1909637f57c7";
 
 		public NewsAPIService(HttpClient client)
 		{
 			_client = client;
 		}
 
-		public async Task<NewsAPIResponse> DoSearch(string searchQuery)
+		public async Task<NewsApiNewResponse> DoSearch(string searchQuery)
 		{
 
-			var url = $"https://newsapi.org/v2/everything?q={searchQuery}&from=2024-05-20&to=2024-05-20&sortBy=popularity&apiKey={API_KEY}";
+			var url = $"https://newsdata.io/api/1/news?apikey={API_KEY}&q={searchQuery}";
 
 			try
 			{
-				var response = await _client.GetFromJsonAsync<NewsAPIResponse>(url);
+                var response = await _client.GetFromJsonAsync<NewsApiNewResponse>(url);
 				return response!;
 			}
             catch (HttpRequestException httpEx)
