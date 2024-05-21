@@ -20,13 +20,18 @@
 				var response = await _client.GetFromJsonAsync<NewsAPIResponse>(url);
 				return response!;
 			}
-			catch(Exception ex)
-			{
+            catch (HttpRequestException httpEx)
+            {
+                Console.WriteLine($"Request error: {httpEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                throw;
+            }
 
-				var bob = 1;
-			}
-
-			return null;
+            return null;
 		}
 
 

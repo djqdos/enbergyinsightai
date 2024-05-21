@@ -1,4 +1,5 @@
 using EnergyInsight.Components;
+using EnergyInsight.Services;
 using Serilog;
 using Serilog.Events;
 
@@ -7,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddHttpClient<NewsAPIService>();
 
 var app = builder.Build();
 
